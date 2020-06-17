@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Header from "./components/Header";
+import InputLocation from "./components/InputLocation";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+class App extends React.Component {
+  state = {
+    weather: "",
+    location: "",
+  };
+
+  getWeatherData = (city) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          weather: data.main.temp.toFixed(1),
+          location: data.name,
+        });
+      })
+      .catch((error) => console.error(error));
+  };
+  render() {
+    return (
+      <React.Fragment>
+        <Header />
+        <InputLocation getWeatherData={this.getWeatherData} />
+        <p style={{ textAlign: "center" }}>
+          Temperature in {this.state.location} is {this.state.weather}°C
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      </React.Fragment>
+    );
+  }
 }
 
 export default App;
